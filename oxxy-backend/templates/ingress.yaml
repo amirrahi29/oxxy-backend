@@ -2,13 +2,16 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ include "oxxy-backend.fullname" . }}
+  annotations:
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/scheme: internet-facing
 spec:
+  ingressClassName: alb
   rules:
-    - host: oxxy-backend.example.com
-      http:
+    - http:
         paths:
           - path: /
-            pathType: http
+            pathType: Prefix
             backend:
               service:
                 name: {{ include "oxxy-backend.fullname" . }}
