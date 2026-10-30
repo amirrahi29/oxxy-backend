@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: Oxxy-App
+
+server:
+  port: 8081
