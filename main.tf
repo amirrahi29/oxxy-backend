@@ -39,10 +39,13 @@ resource "aws_iam_role" "github_actions_ecr_push" {
         }
         Action = "sts:AssumeRoleWithWebIdentity"
         Condition = {
-          StringLike = {
-            "token.actions.githubusercontent.com:sub" = "repo:amirrahi29/oxxy-backend:*"
-          }
+        StringEquals = {
+          "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
         }
+        StringLike = {
+          "token.actions.githubusercontent.com:sub" = "repo:amirrahi29@107117774/oxxy-backend@1439400639:*"
+        }
+      }
       }
     ]
   })

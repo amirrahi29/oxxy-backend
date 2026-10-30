@@ -14,7 +14,7 @@ public class ProductController {
 		return List.of(
 				new Product(1L, "Laptop", 999.99),
 				new Product(2L, "Phone", 499.99),
-				new Product(3L, "Headphones", 79.99));  
+				new Product(3L, "Headphones", 79.99));
 	}
 
 	public record Product(Long id, String name, double price) {
