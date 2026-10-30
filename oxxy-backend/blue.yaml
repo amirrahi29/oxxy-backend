@@ -1,0 +1,15 @@
+replicaCount: 1
+image:
+  repository: 033193124350.dkr.ecr.ap-south-1.amazonaws.com/oxxy-backend
+  tag: latest
+  pullPolicy: Always
+service:
+  port: 8081
+  type: ClusterIP
+resources:
+  limits:
+    memory: 512Mi
+    cpu: 500m
+  requests:
+    memory: 256Mi
+    cpu: 250m
