@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "oxxy-backend.fullname" . }}
+spec:
+  rules:
+    - host: oxxy-backend.example.com
+      http:
+        paths:
+          - path: /
+            pathType: http
+            backend:
+              service:
+                name: {{ include "oxxy-backend.fullname" . }}
+                port:
+                  number: 8081
