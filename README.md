@@ -202,3 +202,43 @@ kubectl logs -n kube-system -l app.kubernetes.io/name=aws-load-balancer-controll
 - The HorizontalPodAutoscaler in the chart scales pods, not EC2 nodes. There is no Cluster Autoscaler or Karpenter, and no metrics-server, so HPA targets stay unknown.
 - The node group max size is 2. That cap does not create a new node when a second pod is added. One `t3.medium` fits the current requests.
 - HTTP only. The browser shows "Not Secure" because there is no TLS certificate.
+
+## Blue-green deployment
+
+Do values files hain. `blue.yaml` mein image tag `latest` hai. Yahi abhi deployed version hai. `green.yaml` mein image tag `v1` hai. Yahi naya version hai jo deploy karna hai. Helm chart `./oxxy-backend` hai, release name `oxxy-backend` hai, namespace `default` hai.
+
+`values.yaml` ko rename karke `blue.yaml` kar diya gaya hai. `blue.yaml` delete mat karna. CI pipeline aur Helm isi file par default karte hain.
+
+Blue deploy:
+
+```bash
+helm upgrade --install oxxy-backend ./oxxy-backend -f blue.yaml -n default
+```
+
+Green deploy:
+
+```bash
+helm upgrade --install oxxy-backend ./oxxy-backend -f green.yaml -n default
+```
+
+Labels check karo. Blue par `version` label `latest` dikhega, green par `v1`.
+
+```bash
+kubectl get pods -n default --show-labels
+```
+
+Pod describe karke image tag dekho. Image format `repository/image:tag` hota hai. Colon ke baad wala hissa tag hai.
+
+```bash
+kubectl describe pod <pod-name> -n default
+```
+
+Cluster mein word `blue` ya `green` nahi dikhta. Dono ko sirf image tag alag karta hai. `version` label `templates/deployment.yaml` ke `{{ .Values.image.tag }}` se aata hai.
+
+Pod labels alag lines par hone chahiye:
+
+```yaml
+labels:
+  app: oxxy-backend
+  version: {{ .Values.image.tag }}
+```
