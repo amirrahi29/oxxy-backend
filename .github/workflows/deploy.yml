@@ -36,6 +36,10 @@ jobs:
 
       - run: aws eks update-kubeconfig --name oxxy --region ap-south-1
 
+      - uses: azure/setup-helm@v4
+
+      - run: helm upgrade --install oxxy-backend ./oxxy-backend -n default -f oxxy-backend/blue.yaml
+
       - run: |
           kubectl rollout restart deployment/oxxy-backend -n default
           kubectl rollout status deployment/oxxy-backend -n default
