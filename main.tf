@@ -249,6 +249,11 @@ resource "aws_eks_cluster" "oxxy" {
   version  = "1.35"
   role_arn = aws_iam_role.eks_cluster.arn
 
+  access_config {
+    authentication_mode                         = "API_AND_CONFIG_MAP"
+    bootstrap_cluster_creator_admin_permissions = true
+  }
+
   vpc_config {
     subnet_ids              = aws_subnet.private[*].id
     endpoint_public_access  = true
@@ -278,4 +283,39 @@ resource "aws_eks_node_group" "oxxy" {
     aws_iam_role_policy_attachment.eks_cni,
     aws_iam_role_policy_attachment.eks_ecr
   ]
+}
+
+resource "aws_iam_role_policy" "github_eks" {
+  name = "eks-deploy"
+  role = aws_iam_role.github_actions_ecr_push.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = ["eks:DescribeCluster"]
+        Resource = aws_eks_cluster.oxxy.arn
+      }
+    ]
+  })
+}
+
+resource "aws_eks_access_entry" "github" {
+  cluster_name  = aws_eks_cluster.oxxy.name
+  principal_arn = aws_iam_role.github_actions_ecr_push.arn
+  type          = "STANDARD"
+}
+
+resource "aws_eks_access_policy_association" "github" {
+  cluster_name  = aws_eks_cluster.oxxy.name
+  principal_arn = aws_iam_role.github_actions_ecr_push.arn
+  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSEditPolicy"
+
+  access_scope {
+    type       = "namespace"
+    namespaces = ["default"]
+  }
+
+  depends_on = [aws_eks_access_entry.github]
 }

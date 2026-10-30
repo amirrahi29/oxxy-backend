@@ -31,3 +31,11 @@ jobs:
       - run: |
           docker push 033193124350.dkr.ecr.ap-south-1.amazonaws.com/oxxy-backend:latest
           docker push 033193124350.dkr.ecr.ap-south-1.amazonaws.com/oxxy-backend:${{ github.sha }}
+
+      - uses: azure/setup-kubectl@v4
+
+      - run: aws eks update-kubeconfig --name oxxy --region ap-south-1
+
+      - run: |
+          kubectl rollout restart deployment/oxxy-backend -n default
+          kubectl rollout status deployment/oxxy-backend -n default
