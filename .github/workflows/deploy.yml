@@ -42,4 +42,5 @@ jobs:
 
       - run: |
           kubectl rollout restart deployment/oxxy-backend -n default
-          kubectl rollout status deployment/oxxy-backend -n default
+          kubectl rollout status deployment/oxxy-backend -n default --timeout 5m
+          

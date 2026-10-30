@@ -84,3 +84,17 @@ kubectl describe pod <pod-name> -n default
 - Cluster mein `blue` ya `green` word nahi hota. Sirf tag aur label unhe alag karte hain.
 - `version` label `templates/deployment.yaml` ke `{{ .Values.image.tag }}` se aata hai.
 - Labels ke neeche `app` aur `version` alag lines par hone chahiye: `app: oxxy-backend` aur `version: {{ .Values.image.tag }}`.
+
+## Naye Project Ke Liye Changes
+
+Naya naam use karna ho to yeh jagah badlo:
+
+1. `main.tf` (repo root). Cluster name `oxxy`, ECR repo `oxxy-backend`, aur `oxxy-` wale resource names. GitHub OIDC `sub` bhi naye repo ka hona chahiye.
+2. `.github/workflows/deploy.yml`. ECR URL `033193124350.dkr.ecr.ap-south-1.amazonaws.com/oxxy-backend`, image name `oxxy-backend`, cluster name `oxxy`, helm release `oxxy-backend`, chart path `./oxxy-backend`, aur values file path `oxxy-backend/blue.yaml`.
+3. `oxxy-backend/blue.yaml` aur `oxxy-backend/green.yaml`. `image.repository` ka poora path. `values.yaml` mein bhi yahi path hai.
+4. `oxxy-backend/templates/deployment.yaml`. `app` label value hardcoded nahi hai. Woh `{{ include "oxxy-backend.fullname" . }}` se aata hai. Chart ka naam badlo to helper ka naam `oxxy-backend/templates/_helpers.tpl` mein bhi badlo.
+5. `templates/service.yaml` aur `templates/ingress.yaml`. Service name hardcoded nahi hai. Dono wahi `oxxy-backend.fullname` helper use karte hain. Helper badalne par yeh bhi match karenge.
+6. `oxxy-backend/Chart.yaml`. `name: oxxy-backend`. Chart folder ka naam bhi `oxxy-backend` hai. Dono ko naye naam se match karo.
+7. Namespace `default`. Alag namespace chahiye to har command ka `-n default` badlo, workflow mein bhi.
+8. Region `ap-south-1` aur account `033193124350`. Yeh `main.tf`, workflow, aur `image.repository` teeno mein hain.
+9. Changes ke baad `terraform apply` chalao, phir pehli baar `main` par push karo. Pipeline blue deploy karegi.
