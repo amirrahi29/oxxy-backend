@@ -22,8 +22,12 @@ jobs:
 
       - uses: aws-actions/amazon-ecr-login@v2
 
-      - run: docker build -t oxxy-backend:latest .
+      - run: docker build -t oxxy-backend:latest -t oxxy-backend:${{ github.sha }} .
 
-      - run: docker tag oxxy-backend:latest 033193124350.dkr.ecr.ap-south-1.amazonaws.com/oxxy-backend:latest
+      - run: |
+          docker tag oxxy-backend:latest 033193124350.dkr.ecr.ap-south-1.amazonaws.com/oxxy-backend:latest
+          docker tag oxxy-backend:${{ github.sha }} 033193124350.dkr.ecr.ap-south-1.amazonaws.com/oxxy-backend:${{ github.sha }}
 
-      - run: docker push 033193124350.dkr.ecr.ap-south-1.amazonaws.com/oxxy-backend:latest
+      - run: |
+          docker push 033193124350.dkr.ecr.ap-south-1.amazonaws.com/oxxy-backend:latest
+          docker push 033193124350.dkr.ecr.ap-south-1.amazonaws.com/oxxy-backend:${{ github.sha }}
