@@ -12,9 +12,9 @@ public class ProductController {
 	@GetMapping
 	public List<Product> getProducts() {
 		return List.of(
-				new Product(1L, "Laptop1", 999.99),
-				new Product(2L, "Phone1", 490.99),
-				new Product(3L, "Headphones1", 79.99));
+				new Product(1L, "Laptop12", 999.99),
+				new Product(2L, "Phone12", 490.99),
+				new Product(3L, "Headphones12", 79.99));
 	}
 
 	public record Product(Long id, String name, double price) {
